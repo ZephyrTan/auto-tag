@@ -65,9 +65,9 @@ async function app() {
             type: 'list',
             default: 1,
             choices: [{
-                name: '根据package.json文件的version生成并更新文件',
+                name: '根据package.json文件的version生成',
                 value: 'package'
-            }, {name: '根据最新的Tag生成', value: 'tag'},],
+            }, {name: '根据最新的Tag生成', value: 'tag'}, {name: '自定义tag', value: 'customTag'}],
         }, {
             name: 'env', message: `选择环境:`, type: 'list', default: 2, choices: ['all', 'prod', 'demo', 'dev'],
         },])
@@ -75,6 +75,8 @@ async function app() {
             try {
                 if (baseline === 'package') {
                     await addTagByPackage(env)
+                } else if (baseline === 'customTag') {
+                    await addCustomTag(env)
                 } else {
                     await addTagByTags(env)
                 }
@@ -141,6 +143,28 @@ async function app() {
             // fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, '  '))
             // #endregion
             await createTag(versions)
+        } catch (error) {
+            log(chalk.red(`{${error.message}}`))
+        }
+    }
+
+    // #endregion
+
+    async function addCustomTag(env) {
+        try {
+            inquirer
+                .prompt([{
+                    name: 'customTag',
+                    message: `输入自定义Tag:`,
+                    type: 'input',
+                }])
+                .then(async ({customTag}) => {
+                    try {
+                        await createTag([{env: env, tag: `${env}-${customTag}`, version: customTag}])
+                    } catch (err) {
+                        log(chalk.red(`{${err.message}}`))
+                    }
+                })
         } catch (error) {
             log(chalk.red(`{${error.message}}`))
         }

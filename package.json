@@ -1,6 +1,6 @@
 {
   "name": "auto-tag",
-  "version": "1.0.3",
+  "version": "1.0.22",
   "description": "",
   "main": "./bin/auto-tag.js",
   "bin": {
@@ -15,6 +15,9 @@
     "semver": "^7.3.8",
     "shelljs": "^0.8.5",
     "simple-git": "^3.15.1"
+  },
+  "publishConfig": {
+    "registry": "http://172.26.160.58:4873"
   },
   "author": "tanzhifei",
   "license": "MIT"
