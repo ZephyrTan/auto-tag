@@ -99,14 +99,23 @@ async function app() {
         const tags = await git.tags()
 
         let addTagSingle = async envName => {
-            const reg = new RegExp(`^${envName}`)
-            let envTags = tags.all.filter(tag => reg.test(tag))
-            let lastTag = envTags[envTags.length - 1] || `${envName}-v0.0.0-19000101`
-            log(chalk.gray(`{🏷  仓库最新的Tag: ${lastTag}}`))
-            let lastVsersion = lastTag.split('-')[1].substring(1)
-            let version = await generateNewTag(envName, lastVsersion)
-            log(chalk.gray(`{🏷  生成最新的Tag: ${version.tag}}`))
-            await createTag([version])
+            try {
+                const reg = new RegExp(`^${envName}`)
+                let envTags = tags.all.filter(tag => reg.test(tag))
+                let lastTag = envTags[envTags.length - 1] || `${envName}-v0.0.0-19000101`
+                log(chalk.gray(`{🏷  仓库最新的Tag: ${lastTag}}`))
+                let lastVersion = ''
+                if (lastTag.split('-').length > 1) {
+                    lastVersion = lastTag.split('-')[1].substring(1)
+                } else {
+                    lastVersion = '0.0.0'
+                }
+                let version = await generateNewTag(envName, lastVersion)
+                log(chalk.gray(`{🏷  生成最新的Tag: ${version.tag}}`))
+                await createTag([version])
+            } catch (e) {
+                log(chalk.red(`{❎  错误：${e}`))
+            }
         }
 
         if (env === 'all') {
